@@ -1,0 +1,201 @@
+{%extends 'base.html'%}
+{%block body%}
+<form action="/time_table" method="POST">
+    <div class="form-group">
+        <label>Select Semester</label>
+        <select class="form-select" id="sem-select-slt" aria-label="Default select example" name="select-sem" onchange="enableButton()">
+            {% if sem %}
+             <option selected value="{{sem}}">{{sem}} Semester</option>
+            {% else %}
+            <option selected value=" ">Select a Semester</option>
+            {% endif %} 
+            {% for s in list %}
+                <option value="{{s}}">{{s}} Semester</option>
+            {% endfor %}
+          </select>
+    </div>
+    <input type="submit" id = "sem-slt-btn" name="" value="Select" disabled class="sem-btn btn btn-primary" />
+</form>
+<br/>
+
+{%if sem %}
+<div class="float-left">
+    <h3>Time table for {{sem}} Semester</h3>
+</div>
+
+<div class="text-right">
+<button type="button" class="btn btn-success" data-toggle="modal" data-target="#timeInsertModal"><i class="bi bi-plus-lg"></i> Add Data</button>
+</div>
+<br/>
+    {%if (data==())%}
+        <h3>No Data in table</h3>
+    {%else%}
+        <table id="time-table" class="table table-striped">
+            <thead>
+            <tr>
+                <th>Course Code</th>
+                <th>Course Name</th>
+                <th>Date</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Fixed Faculties</th>
+                <th></th>
+                <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {%for d in data%}
+                <tr>
+                    <td>{{d.course_code}}</td>
+                    <td>{{d.course_name}}</td>
+                    <td >{{d.exam_date}}</td>
+                    <td>{{d.exam_start_time}}</td>
+                    <td>{{d.exam_end_time}}</td>
+                    <td>{{d.fixed_faculties}}</td>
+                    <td>
+                        <button type="button" class="time-edit-btn btn btn-primary float-right" data-toggle="modal"
+                         data-target="#updateTimeModel" data-id={{d.id}} data-cc="{{d.course_code}}" 
+                         data-cn="{{d.course_name}}" data-ed={{d.exam_date}} data-est={{d.exam_start_time}} data-eet={{d.exam_end_time}} data-ff="{{d.fixed_faculties}}">
+                            Edit <i class="bi bi-pencil-fill"></i>
+                        </button>
+                    </td>
+                    <td>
+                        <button type="button" class="time-del-btn btn btn-danger" data-toggle="modal" data-target="#deleteTimeModel" data-id={{d.id}}>Delete <i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>
+                {%endfor%}
+              </tbody>
+        </table>
+        <br/>
+        <hr>
+    {%endif%}
+ 
+    <!-- Modals -->
+        <div class="modal fade" id="timeInsertModal" tabindex="-1" role="dialog" aria-labelledby="timeInsertModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <form action="/add_time_table" method="POST">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="timeInsertModalLabel">Add Data</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="semester" class="col-form-label">Semester:</label>
+                        <input type="text" class="form-control" name="sem_no" value={{sem}} readonly="readonly">
+                    </div>
+                    <div class="form-group">
+                        <label for="course-code" class="col-form-label">Course Code:</label>
+                        <input type="text" class="form-control" name="course-code" placeholder="Enter Course Code" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="course-name" class="col-form-label">Course Name:</label>
+                        <input type="text" class="form-control" name="course-name" placeholder="Enter Course Name" required>
+                    </div>
+                    <div class="form-group">
+                        <llabel for="exam-date" class="col-form-label"bel>Date:</llabel>
+                        <input type="date" class="form-control" name="exam-date" placeholder="Enter Date" required>
+                    </div>
+                    <div class="form-group">
+                        <label label for="exam-start-time" class="col-form-label">Start Time:</label>
+                        <input type="time" class="form-control" name="exam-start-time" placeholder="Enter Start Time" required>
+                    </div>
+                    <div class="form-group">
+                      <label label for="exam-end-time" class="col-form-label">End Time:</label>
+                      <input type="time" class="form-control" name="exam-end-time" placeholder="Enter end Time" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="fixed-faculties" class="col-form-label">Fixed Faculties:</label>
+                    <input type="text" class="form-control" name="fixed-faculties" placeholder="Enter fixed-faculties id separated by &quot; , &quot; ">
+                </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Add</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+
+          <div class="modal fade" id="deleteTimeModel" tabindex="-1" role="dialog" aria-labelledby="deleteTimeModelCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                  <form action="/delete_time_table" method="POST">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="deleteTimeModelLabel">Delete Record</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                    <h5>Are you sure you want to delete this record?</h5>
+                    <input type="hidden" id = "semester" name="sem" value="{{sem}}">
+                    <input type="hidden" name="rec_id" id="delTime-mod-id" value="">
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger">Yes</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal fade" id="updateTimeModel" tabindex="-1" role="dialog" aria-labelledby="updateTimeModeLabel" aria-hidden="true"> 
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <form action="/update_time_table" method="POST">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="updateTimeModeLabel">Update Data</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="rec_id" id="updateTime-mod-id" value="">
+                    <div class="form-group">
+                        <label for="semester" class="col-form-label">Semester:</label>
+                        <input type="text" class="form-control" id = "updateTime-mod-sem" name="sem_no" value={{sem}} readonly="readonly">
+                    </div>
+                    <div class="form-group">
+                        <label for="course-code" class="col-form-label">Course Code:</label>
+                        <input type="text" class="form-control" id = "updateTime-mod-code" name="course-code" placeholder="Enter Course Code" value="" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="course-name" class="col-form-label">Course Name:</label>
+                        <input type="text" class="form-control" id = "updateTime-mod-name" name="course-name" placeholder="Enter Course Name" value="" required>
+                    </div>
+                    <div class="form-group">
+                        <llabel for="exam-date" class="col-form-label"bel>Date:</llabel>
+                        <input type="date" class="form-control" id = "updateTime-mod-date" name="exam-date" placeholder="Enter Date" value="" required>
+                    </div>
+                    <div class="form-group">
+                      <label label for="exam-start-time" class="col-form-label">Start Time:</label>
+                      <input type="time" class="form-control" id="updateTime-mod-stime" name="exam-start-time" placeholder="Enter Start Time" required>
+                  </div>
+                  <div class="form-group">
+                    <label label for="exam-end-time" class="col-form-label">End Time:</label>
+                    <input type="time" class="form-control" id="updateTime-mod-etime" name="exam-end-time" placeholder="Enter end Time" required>
+                </div>
+                <div class="form-group">
+                  <label for="fixed-faculties" class="col-form-label">Fixed Faculties:</label>
+                  <input type="text" class="form-control" id="updateTime-mod-ff" name="fixed-faculties" placeholder="Enter fixed-faculties id separated by &quot; , &quot;">
+              </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Update</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+        
+  
+{%endif%}  
+
+{%endblock%}

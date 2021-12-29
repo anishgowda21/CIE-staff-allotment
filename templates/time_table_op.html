@@ -1,0 +1,21 @@
+{%extends 'base.html'%}
+{%block body%}
+
+<form action="/time_table" method="POST">
+    <div class="form-group">
+        <label>Select Semester</label>
+        <select class="form-select" aria-label="Default select example" name="id">
+            <option selected>Open this select menu</option>
+            <option value="3rd">3rd</option>
+            <option value="5th">5th</option>
+            <option value="7th">7th</option>
+          </select>
+
+    </div>
+    <input type="submit" name="" value="Delete" class="btn btn-danger" />
+</form>
+
+
+{%endblock%}
+
+
