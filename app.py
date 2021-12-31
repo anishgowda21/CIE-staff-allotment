@@ -26,6 +26,12 @@ def get_faculty():
     cur.execute(q1)
     return cur.fetchall()
 
+def get_sem_info(sem_type):
+    cur = mysql.connection.cursor()
+    q1 = f"SELECT * FROM {sem_type}_sem_info"
+    cur.execute(q1)
+    return cur.fetchall()
+
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -169,8 +175,20 @@ def update_faculty():
         cur.close()
         flash('Updated the record', 'success')
         print("Updated to db")
-
         return redirect(url_for("faculty"))
+
+@app.route("/sem_info",methods=["GET","POST"])
+def sem_info():
+    if request.method == "GET":
+        return render_template("sem_info.html")
+    if request.method == "POST":
+        sem_type = request.form["sem-type"]
+        data = get_sem_info(sem_type.lower())
+        print(sem_type)
+        return render_template("sem_info.html",data=data,sem_type=sem_type)
+
+
+
 if __name__ == "__main__":
     app.secret_key = "secret123"
     app.run(debug=True)

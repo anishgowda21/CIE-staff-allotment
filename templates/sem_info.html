@@ -1,0 +1,95 @@
+{% extends 'base.html' %} {% block body %}
+    <!-- Create a form to choose between Odd and even Semester and get the table -->
+    <form action="/sem_info" method="POST">
+        <div class = "form-group">
+        <label for="semester">Choose Semester Type:</label>
+        <!-- choose betweeeen odd and even semester if a default semester if given select that and show other as option if not show a default select statement-->
+        <select class="form-select" name="sem-type">
+        {% if sem_type%}
+            <option selected value="{{sem_type}}" hidden>{{sem_type}} Semester</option>
+        {% endif %}
+        <option value="Odd">Odd Semester</option>
+        <option value="Even">Even Semester</option>
+            </select>
+    </div>
+    <input type="submit" name="" value="Select" class="sem-btn btn btn-primary" />
+    </form>
+    <br>
+    {%if (sem_type) %}
+    {% if (data) %}
+        <!-- create a table containing semester info -->
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Semester</th>
+                    <th>No of courses</th>
+                    <th>Available Rooms for exam</th>
+                    <th>Rooms</th>
+                    <th>Total Duties</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in data %}
+                    <tr>
+                        <td>{{ d.semester }}</td>
+                        <td>{{ d.sub_no }}</td>
+                        <td>{{ d.ava_rooms }}</td>
+                        <td>{{ d.rooms }}</td>
+                        <td>{{ d.total_duties }}</td>
+                        <td>
+                            <button type="button" class="update-sem-btn btn btn-primary" data-toggle="modal" data-target="#updateSemModel"  data-sem="{{d.semester}}" data-sub="{{d.sub_no}}" data-ava="{{d.ava_rooms}}" data-rooms="{{d.rooms}}" data-total="{{d.total_duties}}">
+                                Edit <i class="bi bi-pencil-fill"></i>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <h1>No data found</h1>
+    {% endif %}
+{% endif %}
+
+<!-- Modals -->
+<!-- Update Semester Modal -->
+<div class="modal fade" id="updateSemModel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="/update_sem_info" method="POST">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Update Semester Info</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            <div class="form-group">
+                <label for="semester">Semester:</label>
+                <input type="text" class="form-control" name="semester" id="updateSem-mod-semester" placeholder="Semester" readonly required>
+            </div>
+            <div class="form-group">
+                <label for="sub">No of courses:</label>
+                <input type="number" class="form-control" name="sub" id="updateSem-mod-sub" placeholder="No of courses" required>
+            </div>
+            <div class="form-group">
+                <label for="ava-rooms">Available Rooms for exam:</label>
+                <input type="number" class="form-control" name="ava-rooms" id="updateSem-mod-avaRooms" placeholder="Available Rooms for exam" required>
+            </div>
+            <div class="form-group">
+                <label for="rooms">Rooms:</label>
+                <input type="text" class="form-control" name="rooms" id="updateSem-mod-rooms" placeholder="Rooms" required>
+            </div>
+            <div class="form-group">
+                <label for="total-duties">Total Duties:</label>
+                <input type="number" class="form-control" name="total-duties" id="updateSem-mod-totalDuties" placeholder="Total Duties" required readonly>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </form>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

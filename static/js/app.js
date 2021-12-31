@@ -70,6 +70,38 @@ $("#facultyUpdateModal").find(".modal-body #updateFac-phone").val(phone);
 $("#facultyUpdateModal").find(".modal-body #updateFac-da").val(fac_da);
 });
 
+$(document).on("click",".update-sem-btn",function(){
+    var sem = $(this).data('sem');
+    var no_cou = $(this).data('sub');
+    var ava_room = $(this).data('ava');
+    var rooms = $(this).data('rooms');
+    if (rooms) {
+        rooms = rooms.join(',');
+    }
+    $("#updateSemModel").find(".modal-body #updateSem-mod-semester").val(sem);
+    $("#updateSemModel").find(".modal-body #updateSem-mod-sub").val(no_cou);
+    $("#updateSemModel").find(".modal-body #updateSem-mod-avaRooms").val(ava_room);
+    $("#updateSemModel").find(".modal-body #updateSem-mod-rooms").val(rooms);
+    $("#updateSemModel").find(".modal-body #updateSem-mod-totalDuties").val(ava_room*no_cou);
+    $("#updateSem-mod-sub").on("keyup",function(){
+        console.log("keyup on 1");
+        var sub = $("#updateSem-mod-sub").val();
+        var ava = $("#updateSem-mod-avaRooms").val();
+        $("#updateSemModel").find(".modal-body #updateSem-mod-totalDuties").val(sub*ava);
+    });
+    
+    $("#updateSem-mod-avaRooms").on("keyup",function(){
+        console.log("keyup on 2");
+        var sub = $("#updateSem-mod-sub").val();
+        var ava = $("#updateSem-mod-avaRooms").val();
+        $("#updateSemModel").find(".modal-body #updateSem-mod-totalDuties").val(sub*ava);
+    });
+
+});
+
+//Automaticly populate #updateSem-mod-totalDuties based on multiplication of values in #updateSem-mod-sub and #updateSem-mod-avaRooms
+
+
 
 $.expr[":"].contains = $.expr.createPseudo(function(arg) {
 return function( elem ) {
