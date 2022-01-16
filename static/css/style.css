@@ -1,3 +1,24 @@
 .notfound{
     display: none;
 }
+
+.error-msg{
+    display: none; 
+    color: #ff0000;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+@media print{
+    .noPrint{
+        display:none;
+    }
+
+ }
+
+ @media screen{
+    .noScreen{
+        display:none;
+    }
+ }

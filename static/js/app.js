@@ -75,14 +75,13 @@ $(document).on("click",".update-sem-btn",function(){
     var no_cou = $(this).data('sub');
     var ava_room = $(this).data('ava');
     var rooms = $(this).data('rooms');
-    if (rooms) {
-        rooms = rooms.join(',');
-    }
+
     $("#updateSemModel").find(".modal-body #updateSem-mod-semester").val(sem);
     $("#updateSemModel").find(".modal-body #updateSem-mod-sub").val(no_cou);
     $("#updateSemModel").find(".modal-body #updateSem-mod-avaRooms").val(ava_room);
     $("#updateSemModel").find(".modal-body #updateSem-mod-rooms").val(rooms);
     $("#updateSemModel").find(".modal-body #updateSem-mod-totalDuties").val(ava_room*no_cou);
+
     $("#updateSem-mod-sub").on("keyup",function(){
         console.log("keyup on 1");
         var sub = $("#updateSem-mod-sub").val();
@@ -128,6 +127,19 @@ $(document).ready(function(){
         }
     });
 });
+//Turn input filed border to red and show error message on invalid input on #updateSem-mod-avaRooms
+function validateSemform(){
+    console.log("called onsubmit");
+    var rooms = $("#updateSem-mod-rooms").val();
+    var avaRooms = $("#updateSem-mod-avaRooms").val();
+    rooms = rooms.split(",").filter(n=>n);
+    console.log(rooms);
+    if(rooms.length != avaRooms){
+        $("#updateSem-mod-rooms").css("border","2px solid red");
+        $(".error-msg").css("display","block");
+        return false;
+}
+}
 
   //Get time and date string from class table and
 var data = document.getElementById("time-table");
@@ -147,5 +159,52 @@ if (data){
         data[i].cells[2].innerHTML = date;
         data[i].cells[5].innerHTML = faculties;
     }
+    
 
 }
+
+var sem_data = document.getElementById("sem-info-table");
+if (sem_data){
+    sem_data = sem_data.rows;
+    for(var i = 1; i < sem_data.length; i++){
+        rooms = sem_data[i].cells[3].innerHTML;
+        rooms = rooms.replaceAll(',', '<br>');
+        sem_data[i].cells[3].innerHTML = rooms;
+    }
+}
+
+var allot_table = document.getElementById("allotment-table");
+if (allot_table){
+    var data = allot_table.rows;
+    for(var i = 1; i < data.length; i++){
+        var stime = data[i].cells[3].innerHTML;
+        console.log(stime);
+        var date = data[i].cells[2].innerHTML;
+        date = date.split("-").reverse().join("-");
+        stime = formateAMPM(formateTime(stime));
+        data[i].cells[3].innerHTML = stime;
+        data[i].cells[2].innerHTML = date;
+    }
+}
+
+
+$(document).ready(function(){
+    //search all columns in faculty table
+    $('#allot_searchall').keyup(function(){
+        var search = $(this).val();
+        $('#allotment-table tbody tr').hide();
+
+        //count total search result
+        var len = $('#allotment-table tbody tr:not(.notfound) td:contains("'+search+'")').length;
+
+        //show search result
+        if(len > 0){
+            $('#allotment-table tbody tr:not(.notfound) td:contains("'+search+'")').each(function(){
+                $(this).closest('tr').show();
+            });
+        }else{
+            $('#allotment-table tbody tr.notfound').show();
+        }
+    });
+});
+
